@@ -1,0 +1,212 @@
+---
+title: "EDS 223: Week 1 Lab"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+install.packages("sf") # vector data
+install.packages("stars") # raster data
+```
+
+```{r}
+install.packages("tmap")
+```
+
+
+```{r}
+library(sf) # vector maps
+library(stars) # raster maps
+library(here)
+```
+
+```{r}
+library(tmap) # static and interactive maps
+```
+
+```{r}
+# raster of global elevations
+world_elevation <- read_stars(here("data","worldelevation.tif"))
+
+# country boundaries
+world_vector <- read_sf(here("data","worldvector.gpkg"))
+
+# major cities
+world_cities <- read_sf(here("data","worldcities.gpkg"))
+```
+
+```{r}
+# plotting a single spatial object
+tm_shape(world_vector) + # defines the spatial object to plot
+  tm_polygons() # defines how to plot the object
+```
+
+```{r}
+# plotting two spatial objects
+
+tm_shape(world_vector) + # defines the FIRST spatial object to plot
+  tm_polygons() + # defines how to plot the FIRST object
+tm_shape(world_cities) + # defines the SECOND objet to plot
+  tm_dots() # defines how to plot the SECOND object
+```
+
+```{r}
+# plotting vector and raster spatial objects
+
+tm_shape(world_elevation) + # plot global elevations
+  tm_raster() + # tm_raster for raster data
+tm_shape(world_vector) +
+  tm_borders() +
+tm_shape(world_cities) +
+  tm_dots() +
+  tm_text("name")
+```
+
+```{r}
+tm_shape(world_cities) + # plot world_cities first
+  tm_dots() +
+  tm_text("name") +
+tm_shape(world_elevation) +
+  tm_raster() +
+tm_shape(world_vector) +
+  tm_borders() 
+```
+
+```{r}
+tm_shape(world_elevation) + 
+  tm_raster() + 
+tm_shape(world_vector) +
+  tm_borders() +
+tm_shape(world_cities, is.master = TRUE) + # plot world_cities last, but set as main shape
+  tm_dots() +
+  tm_text("name")
+```
+
+```{r}
+# map extent
+tm_shape(world_elevation, bbox = c(-15, 35, 45, 65)) + # add bounding box to restrict extent
+  tm_raster() + 
+tm_shape(world_vector) +
+  tm_borders() 
+```
+
+```{r}
+# plot just borders
+
+tm_shape(world_vector) +
+  tm_borders(col = "red")
+```
+
+```{r}
+# fill polygons with fixed color
+
+tm_shape(world_vector) +
+  tm_fill(col = "lightblue")
+```
+
+```{r}
+# fill polygons with a color palette representing a variable
+
+tm_shape(world_vector) +
+  tm_fill("CO2_emissions")
+```
+
+```{r}
+tm_shape(world_cities) +
+  tm_symbols() #tm_squares()
+# not actually very helpful
+```
+
+```{r}
+# using color
+tm_shape(world_vector) + 
+  tm_polygons("life_expectancy",
+              palette = c("yellow", "darkgreen"),
+              title = "Life Expectancy (years)")
+```
+
+```{r}
+library(viridisLite)
+```
+
+```{r}
+tm_shape(world_vector) +
+  tm_polygons("life_expectancy",
+              palette = viridis(8),
+              title  = "Life Expectancy (years)")
+
+# viridis (option = "name of palette", number of colors wanted)
+```
+
+```{r}
+# using size
+
+tm_shape(world_vector) + 
+  tm_polygons() +
+  tm_shape(world_cities) +
+  tm_symbols(size = "pop2020",
+             legend.size.is.portrait = TRUE)
+```
+
+```{r}
+tm_shape(world_vector) +
+  tm_grid() + # OR tm_graticules
+  tm_fill()
+```
+
+```{r}
+tm_shape(world_vector) +
+  tm_fill() +
+  tm_scale_bar() + 
+  tm_compass(position = c("left", "top"))
+```
+
+```{r}
+tm_shape(world_vector) + 
+  tm_fill(col = "wb_income_region",
+          palette = viridisLite::plasma(5),
+          title = "Regional income") +
+  tm_layout(bg.color = "grey95",
+            main.title = "Global income by country",
+            frame = FALSE)
+```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(world_vector) + 
+  tm_fill(col = "wb_income_region",
+          palette = viridislite::plasma(5),
+          title = "Regional income") +
+  tm_layout(bg.color = "grey95",
+            main.title = "Global income by country",
+            frame = FALSE)
+
+tmap_mode("plot")
+```
+
+```{r}
+map1 <- tm_shape(world_vector) + 
+  tm_fill(col = "wb_income_region",
+          palette = viridislite::plasma(5),
+          title = "Regional income") +
+  tm_layout(bg.color = "grey95",
+            main.title = "Global income by country",
+            frame = FALSE)
+
+tmap_save(map1, here("tmap-example.png"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
