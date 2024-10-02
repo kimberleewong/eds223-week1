@@ -177,19 +177,18 @@ tmap_mode("view")
 
 tm_shape(world_vector) + 
   tm_fill(col = "wb_income_region",
-          palette = viridislite::plasma(5),
+          palette = viridisLite::plasma(5),
           title = "Regional income") +
   tm_layout(bg.color = "grey95",
             main.title = "Global income by country",
             frame = FALSE)
-
-tmap_mode("plot")
 ```
 
 ```{r}
+tmap_mode("plot")
 map1 <- tm_shape(world_vector) + 
   tm_fill(col = "wb_income_region",
-          palette = viridislite::plasma(5),
+          palette = viridisLite::plasma(5),
           title = "Regional income") +
   tm_layout(bg.color = "grey95",
             main.title = "Global income by country",

@@ -1,0 +1,72 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+# load everything
+library(here)
+library(tidyverse)
+library(stars)
+library(sf)
+library(tmap)
+library(viridisLite)
+```
+
+```{r}
+# import data
+ei_points <- sf::read_sf(here::here("data", "easter_island", "ei_points.gpkg"))
+volcanoes <- subset(ei_points, type == "volcano")
+ei_elev <- stars::read_stars(here::here("data", "easter_island", "ei_elev.tif"))
+ei_borders <- sf::read_sf(here::here("data", "easter_island", "ei_border.gpkg"))
+ei_roads <- sf::read_sf(here::here("data", "easter_island", "ei_roads.gpkg"))
+```
+
+```{r}
+# map 1: map of easter island
+tm_shape(ei_borders) +
+  tm_borders()
+```
+
+```{r}
+# map 2: map of easter island, borders, elevation, volcano, roads
+tmap_mode("plot")
+
+tm_shape(ei_elev) +
+  tm_raster(palette = c("darkgoldenrod1", "darkred"),
+            title = "Easter Island Elevation (meters)") +
+tm_shape(ei_borders) +
+  tm_borders(lwd = 2.5, col = "black") + 
+tm_shape(ei_roads) +
+  tm_lines(col = "black") +
+tm_shape(volcanoes) +
+  tm_dots(col = "white", size = 1.1) +
+  tm_text("elevation", col = "black", size = .6) + 
+tm_scale_bar(position = c("left", "bottom")) +
+tm_layout(bg.color = "cadetblue1",
+          main.title = "Easter Island Map",
+          frame = FALSE,
+          legend.position = c("right", "bottom"))
+```
+
+```{r}
+# map 3: interactive map of easter island
+tmap_mode("view")
+
+tm_shape(ei_elev) +
+  tm_raster(palette = c("darkgoldenrod1", "darkred"),
+            title = "Easter Island Elevation (meters)") +
+tm_shape(ei_borders) +
+  tm_borders(lwd = 2.5, col = "black") + 
+tm_shape(ei_roads) +
+  tm_lines(col = "black") +
+tm_shape(volcanoes) +
+  tm_dots(col = "white", size = 1.1) +
+  tm_text("elevation", col = "black", size = .6) + 
+tm_scale_bar() +
+tm_layout(bg.color = "cadetblue1",
+          main.title = "Easter Island Map",
+          frame = FALSE)
+```
+
